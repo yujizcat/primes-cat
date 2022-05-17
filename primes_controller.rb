@@ -4,7 +4,8 @@ require "set"
 
 class PrimesGameController
   def initialize
-    @default_primes = Prime.each(100).to_a
+    @max_init = 50
+    @default_primes = Prime.each(@max_init).to_a
     @num_cards = 3
     @id = 1
     @players = Player.new("player#{@id}", @id)
@@ -14,7 +15,20 @@ class PrimesGameController
 
   def set_up
     [*1..@num_cards].each do |i|
-      @players.init_cards(@default_primes.delete(@default_primes.sample))
+      # @players.init_cards(@default_primes.delete(@default_primes.sample))
+      if i == @num_cards - 1
+        duplicate = true
+        while duplicate
+          card = rand(2..@max_init)
+          unless @players.get_cards.include?(card)
+            @players.init_cards(card)
+            duplicate = false
+            break
+          end
+        end
+      else
+        @players.init_cards(@default_primes.delete(@default_primes.sample))
+      end
     end
     @players.sort_cards
   end

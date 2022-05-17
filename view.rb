@@ -26,7 +26,7 @@ class View
     @current_run = true
 
     # -------Test only--------
-    @primes_game.change_cards(@game_id, [2, 3, 5])
+    # @primes_game.change_cards(@game_id, [7, 13, 31])
     # ------------------------
 
     @original = @primes_game.get_player_cards(@current_player).clone
@@ -37,21 +37,24 @@ class View
       system "clear"
 
       # ------------Test score-------------
-      #osum = 100
-      #olen = 4
-      #rnd = 16
-      #t = 40
-      #p (((osum ** Math.cbrt(olen) ** 0.9) / (rnd * 4 + t / 4)) ** 1.5).to_i
-      #exit
+      # osum = 100
+      # olen = 4
+      # rnd = 16
+      # t = 40
+      # p (((osum ** Math.cbrt(olen) ** 0.9) / (rnd * 4 + t / 4)) ** 1.5).to_i
+      # exit
       # -----------------------------------
 
       # p "Lucky Number: #{@primes_game.get_lucky_number}"
       puts "---------------Round #{@round}---------------"
       puts ""
       puts "---------------Player #{@current_player}---------------"
+      puts ""
       # puts "Points: #{@primes_game.get_player_points(@current_player)}"
-      p @primes_game.get_player_cards(@current_player)
-      p "Average: #{@primes_game.get_player_cards_average(@current_player)}"
+      p "#{@primes_game.get_player_cards(@current_player)}"
+      puts ""
+      p "<#{@primes_game.get_player_cards_average(@current_player)}>"
+      # p "Average: #{@primes_game.get_player_cards_average(@current_player)}"
       puts ""
 
       win(start_time) if @primes_game.get_player_cards(@current_player).size <= 1
@@ -75,11 +78,13 @@ class View
     end_time = Time.now
     total_time = end_time - start_time
     system "clear"
+    puts "---------------------------------------"
     puts "You Win!"
     puts "Original cards: #{@original}"
     puts "Rounds took: #{@round - 1}"
     puts "Time took: #{total_time.round(2)}s"
     puts "Your score: #{game_points_calculate(total_time).to_i}"
+    puts "---------------------------------------"
     exit
   end
 end
