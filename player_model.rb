@@ -4,6 +4,8 @@ class Player
     @player_id = player_id
     @cards = []
     @points = 0
+    @powers = 3
+    @current_history = []
   end
 
   def init_cards(card)
@@ -37,5 +39,31 @@ class Player
 
   def sort_cards
     @cards.sort!
+  end
+
+  def append_to_history
+    @current_history << @cards.sort
+  end
+
+  def get_current_history
+    return @current_history
+  end
+
+  def get_uniqueness
+    return @current_history.uniq.size
+  end
+
+  def set_init_powers
+    @powers = (get_cards[-1] / 10)
+    return @powers
+  end
+
+  def get_powers
+    return @powers
+  end
+
+  def reduce_powers
+    @powers -= 1
+    return @powers
   end
 end

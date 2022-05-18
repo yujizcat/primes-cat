@@ -4,7 +4,7 @@ require "set"
 
 class PrimesGameController
   def initialize
-    @max_init = 50
+    @max_init = 100
     @default_primes = Prime.each(@max_init).to_a
     @num_cards = 3
     @id = 1
@@ -16,7 +16,8 @@ class PrimesGameController
   def set_up
     [*1..@num_cards].each do |i|
       # @players.init_cards(@default_primes.delete(@default_primes.sample))
-      if i == @num_cards - 1
+
+      if i == @num_cards + 1 # not use
         duplicate = true
         while duplicate
           card = rand(2..@max_init)
@@ -31,6 +32,7 @@ class PrimesGameController
       end
     end
     @players.sort_cards
+    @players.set_init_powers
   end
 
   def get_lucky_number
@@ -67,7 +69,7 @@ class PrimesGameController
       puts ""
       puts "Which two numbers you want to select to add their sum to your last array"
       puts "For example, type: #{get_player_cards(player_id)[0]}  #{get_player_cards(player_id)[1]}" if get_player_cards(player_id).size > 1
-      puts "Or you can add average #{get_player_cards_average(player_id)} directly to any number."
+      puts "Or you can use one power to add average #{get_player_cards_average(player_id)} directly to any number."
       puts "For example, type: a #{get_player_cards(player_id)[0]}"
       input = input_filter()
       puts ""
@@ -134,6 +136,7 @@ class PrimesGameController
       player_card[player_card.index(current_card)] += current_avg
       p player_card
       change_cards(player_id, player_card)
+      @players.reduce_powers
       return true
     else
       p "Error, you don't have #{current_card} in your cards!"
@@ -247,5 +250,21 @@ class PrimesGameController
       return false
     end
     return selected
+  end
+
+  def append_to_history
+    @players.append_to_history
+  end
+
+  def get_current_history
+    @players.get_current_history
+  end
+
+  def get_uniqueness
+    @players.get_uniqueness
+  end
+
+  def get_powers
+    @players.get_powers
   end
 end
