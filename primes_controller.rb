@@ -3,10 +3,10 @@ require_relative "player_model"
 require "set"
 
 class PrimesGameController
-  def initialize
-    @max_init = 100
+  def initialize(range, cards)
+    @max_init = range
     @default_primes = Prime.each(@max_init).to_a
-    @num_cards = 3
+    @num_cards = cards
     @id = 1
     @players = Player.new("player#{@id}", @id)
     @lucky_number = rand(2..99)
