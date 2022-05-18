@@ -1,14 +1,14 @@
 require_relative "primes_controller"
 
-class View
-  def initialize
+class Router
+  def initialize(range, cards)
     @running = true
     @inputing = false
     @current_run = false
     @current_player = 1
     @round = 1
     @game_id = 0
-    @primes_game = PrimesGameController.new
+    @primes_game = PrimesGameController.new(range, cards)
     @original = []
     @game_points = 0
   end
