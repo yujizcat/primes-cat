@@ -52,7 +52,7 @@ class Router
       puts ""
       puts "---------------Player #{@current_player}---------------"
       puts ""
-      puts "Uniqueness #{@player.get_uniqueness}"
+      puts "Uniqueness #{@player.get_uniqueness}, rate: #{@player.get_uniqueness_rate(@round)}%"
       @primes_game.reset_current_possibles
       @primes_game.auto_reduce_fraction
       p "#{@player.get_cards}"

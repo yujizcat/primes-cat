@@ -54,6 +54,10 @@ class Player
     return @current_history.uniq.size
   end
 
+  def get_uniqueness_rate(round)
+    return ((@current_history.uniq.size * 1.0 / round).round(2) * 100).to_i
+  end
+
   def set_init_powers
     @powers = (get_cards[-1] / 10) + get_cards.size
     return @powers
