@@ -5,6 +5,7 @@ class Player
     @cards = []
     @points = 0
     @powers = 0
+    @average_round = 0
     @current_history = []
   end
 
@@ -54,7 +55,7 @@ class Player
   end
 
   def set_init_powers
-    @powers = (get_cards[-1] * get_cards.sum / 3000) + get_cards.size
+    @powers = (get_cards[-1] / 10) + get_cards.size
     return @powers
   end
 

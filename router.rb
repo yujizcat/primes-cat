@@ -2,13 +2,14 @@ require_relative "primes_controller"
 
 class Router
   def initialize(range, cards)
+    @id = 1
+    @player = Player.new("player#{@id}", @id)
+    @primes_game = PrimesGameController.new(@player, range, cards)
     @running = true
     @inputing = false
     @current_run = false
     @current_player = 1
     @round = 1
-    @game_id = 0
-    @primes_game = PrimesGameController.new(range, cards)
     @original = []
     @game_points = 0
   end
@@ -19,22 +20,21 @@ class Router
   end
 
   def run
-    @primes_game.set_up
+    @primes_game.set_up(@player)
 
     puts "----------"
-    @game_id = @primes_game.get_player_id
     @current_run = true
     pause
 
     # -------Test only--------
-    # @primes_game.change_cards(@game_id, [2, 3, 5])
+    # @primes_game.change_cards([2, 3, 5])
     # ------------------------
 
-    @original = @primes_game.get_player_cards(@current_player).clone
+    @original = @player.get_cards.clone
 
     # pause
     start_time = Time.now
-    @primes_game.append_to_history
+    @player.append_to_history
     while @current_run == true
       system "clear"
 
@@ -52,26 +52,28 @@ class Router
       puts ""
       puts "---------------Player #{@current_player}---------------"
       puts ""
-      puts "Uniqueness #{@primes_game.get_uniqueness}"
-      # puts "Points: #{@primes_game.get_player_points(@current_player)}"
-      @primes_game.auto_reduce_fraction(@current_player)
-      p "#{@primes_game.get_player_cards(@current_player)}"
+      puts "Uniqueness #{@player.get_uniqueness}"
+      @primes_game.reset_current_possibles
+      @primes_game.auto_reduce_fraction
+      p "#{@player.get_cards}"
       puts ""
-      p "<#{@primes_game.get_player_cards_average(@current_player)}>"
-      p "Powers: #{@primes_game.get_powers}"
+      p "<#{@player.get_cards_average}>"
+      p "Powers: #{@player.get_powers}"
+      @primes_game.calculate_current_possibles
+      @primes_game.get_current_possibles
       puts ""
 
-      win(start_time) if @primes_game.get_player_cards(@current_player).size <= 1
-      lose(start_time, "Exceed Cards") if @primes_game.get_player_cards(@current_player).size >= @original.size + 3
-      lose(start_time, "No Powers") if @primes_game.get_powers < 1
+      win(start_time) if @player.get_cards.size <= 1
+      lose(start_time, "Exceed Cards") if @player.get_cards.size >= @original.size + 3
+      lose(start_time, "No Powers") if @player.get_powers < 1
 
-      @primes_game.prompt_add(@current_player)
-      @primes_game.auto_reduce_fraction(@current_player)
-      @primes_game.get_player_cards(@current_player)
+      @primes_game.prompt_add
+      @primes_game.auto_reduce_fraction
+      @player.get_cards
 
       @round += 1
-      @primes_game.auto_reduce_fraction(@game_id)
-      @primes_game.append_to_history
+      @primes_game.auto_reduce_fraction
+      @player.append_to_history
     end
   end
 
@@ -113,7 +115,7 @@ class Router
   end
 
   def display_history
-    @primes_game.get_current_history.each_with_index do |h, i|
+    @player.get_current_history.each_with_index do |h, i|
       puts "Step #{i} #{h}"
     end
   end
