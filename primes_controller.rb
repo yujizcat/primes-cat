@@ -4,15 +4,15 @@ require "prime"
 require "set"
 
 class PrimesGameController
-  def initialize(player, all_players, range, cards)
+  def initialize(all_players, range, cards)
     @min_init = range[0]
     @max_init = range[1]
     @default_primes = Prime.each(@max_init).to_a
     @default_primes = @default_primes.select { |x| x >= @min_init }.map { |x| x }
     @num_cards = cards
     @id = 1
-    @player = player
     @all_players = all_players
+    @player = @all_players[0]
     @current_player = @player
     @round = 1
     @lucky_number = rand(2..99)
@@ -33,6 +33,10 @@ class PrimesGameController
 
   def get_current_player
     @current_player
+  end
+
+  def get_first_player
+    @all_players[0]
   end
 
   def get_lucky_number
@@ -139,7 +143,12 @@ class PrimesGameController
 
   def check_next_card(current_card)
     player_card = @current_player.get_cards
-    next_player_card = get_next_player.get_cards
+    if @all_players.size > 1
+      next_player_card = get_next_player.get_cards
+    else
+      p "Error, only one player"
+      return false
+    end
     if next_player_card.include?(current_card)
       # Only allow if other person'card size > 2
       if next_player_card.size > 2

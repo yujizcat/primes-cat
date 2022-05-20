@@ -5,8 +5,9 @@ class Router
     @id = 1
     @player = Player.new("player#{@id}", @id)
     @rival = Player.new("Rival", @id + 1)
-    @all_players = [@player, @rival]
-    @primes_game = PrimesGameController.new(@player, @all_players, range, cards)
+    # @all_players = [@player, @rival]
+    @all_players = [@player]
+    @primes_game = PrimesGameController.new(@all_players, range, cards)
     @running = true
     @inputing = false
     @current_run = false
@@ -34,11 +35,11 @@ class Router
 
     @original = @player.get_cards.clone
 
-    pause
+    # pause
     start_time = Time.now
     @player.append_to_history
     while @current_run == true
-      #system "clear"
+      system "clear"
 
       # ------------Test score-------------
       # osum = 100
@@ -50,6 +51,8 @@ class Router
       # -----------------------------------
 
       # p "Lucky Number: #{@primes_game.get_lucky_number}"
+
+      # Get current round and player
       puts "---------------Round #{@primes_game.get_current_round}---------------"
       puts ""
       puts "---------------Player #{@primes_game.get_current_player.get_id}---------------"
@@ -64,13 +67,12 @@ class Router
       @primes_game.calculate_current_possibles
       @primes_game.get_current_possibles
       puts ""
-      p @primes_game.get_next_player
 
       # Get another player's card
       if @primes_game.get_current_player == @player
-        p @rival.get_cards
+        p @primes_game.get_next_player.get_cards
       else
-        p @player.get_cards
+        p @primes_game.get_first_player.get_cards
       end
 
       win(start_time) if @primes_game.get_current_player.get_cards.size <= 1
