@@ -4,11 +4,13 @@ class Router
   def initialize(range, cards)
     @id = 1
     @player = Player.new("player#{@id}", @id)
+    @rival = Player.new("Rival", @id + 1)
+    @all_players = [0, @player, @rival]
     @primes_game = PrimesGameController.new(@player, range, cards)
     @running = true
     @inputing = false
     @current_run = false
-    @current_player = 1
+    @current_player = @player
     @round = 1
     @original = []
     @game_points = 0
@@ -21,6 +23,7 @@ class Router
 
   def run
     @primes_game.set_up(@player)
+    @primes_game.set_up(@rival)
 
     puts "----------"
     @current_run = true
@@ -50,30 +53,39 @@ class Router
       # p "Lucky Number: #{@primes_game.get_lucky_number}"
       puts "---------------Round #{@round}---------------"
       puts ""
-      puts "---------------Player #{@current_player}---------------"
+      puts "---------------Player #{@current_player.get_id}---------------"
       puts ""
-      puts "Uniqueness #{@player.get_uniqueness}, rate: #{@player.get_uniqueness_rate(@round)}%"
+      puts "Uniqueness #{@current_player.get_uniqueness}, rate: #{@current_player.get_uniqueness_rate(@round)}%"
       @primes_game.reset_current_possibles
       @primes_game.auto_reduce_fraction
-      p "#{@player.get_cards}"
+      p "#{@current_player.get_cards}"
       puts ""
-      p "<#{@player.get_cards_average}>"
-      p "Powers: #{@player.get_powers}"
+      p "<#{@current_player.get_cards_average}>"
+      p "Powers: #{@current_player.get_powers}"
       @primes_game.calculate_current_possibles
       @primes_game.get_current_possibles
       puts ""
 
-      win(start_time) if @player.get_cards.size <= 1
-      lose(start_time, "Exceed Cards") if @player.get_cards.size >= @original.size + 3
-      lose(start_time, "No Powers") if @player.get_powers < 1
+      # Get another player's card
+      if @current_player == @player
+        p @rival.get_cards
+      else
+        p @player.get_cards
+      end
+
+      win(start_time) if @current_player.get_cards.size <= 1
+      lose(start_time, "Exceed Cards") if @current_player.get_cards.size >= @original.size + 3
+      lose(start_time, "No Powers") if @current_player.get_powers < 1
 
       @primes_game.prompt_add
       @primes_game.auto_reduce_fraction
-      @player.get_cards
+      @current_player.get_cards
 
       @round += 1
       @primes_game.auto_reduce_fraction
-      @player.append_to_history
+      @current_player.append_to_history
+
+      finished_current_round
     end
   end
 
@@ -115,8 +127,18 @@ class Router
   end
 
   def display_history
-    @player.get_current_history.each_with_index do |h, i|
+    @current_player.get_current_history.each_with_index do |h, i|
       puts "Step #{i} #{h}"
     end
+  end
+
+  def finished_current_round
+    @round += 1
+    if @current_player == @player
+      @current_player = @rival
+    else
+      @current_player = @player
+    end
+    @primes_game.set_player_as_current(@current_player)
   end
 end

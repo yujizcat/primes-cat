@@ -1,5 +1,5 @@
-require "prime"
 require_relative "player_model"
+require "prime"
 require "set"
 
 class PrimesGameController
@@ -23,22 +23,32 @@ class PrimesGameController
     player.set_init_powers
   end
 
+  def set_player_as_current(player)
+    @player = player
+  end
+
   def get_lucky_number
     return @lucky_number
   end
 
-  def prompt_add()
+  def prompt
+    puts ""
+    puts "Which two numbers you want to select to add their sum to your last array"
+    puts "For example, type: #{@player.get_cards[0]}  #{@player.get_cards[1]}" if @player.get_cards.size > 1
+    puts "Or you can use one power to add average #{@player.get_cards_average} directly to any number."
+    puts "For example, type: a #{@player.get_cards[0]}"
+    puts "Or you can take rival's card to add to the sum to your greatest card."
+    puts "For example, type: s (river's card)"
+  end
+
+  def prompt_add
     running = true
     while running
-      puts ""
-      puts "Which two numbers you want to select to add their sum to your last array"
-      puts "For example, type: #{@player.get_cards[0]}  #{@player.get_cards[1]}" if @player.get_cards.size > 1
-      puts "Or you can use one power to add average #{@player.get_cards_average} directly to any number."
-      puts "For example, type: a #{@player.get_cards[0]}"
+      prompt
       input = input_filter()
       puts ""
 
-      if input.class == Integer
+      if input.instance_of?(Integer)
         # add average into one of my card
         add_avg = add_average_card(input)
         if add_avg == true
@@ -46,6 +56,7 @@ class PrimesGameController
           return 1
         end
       else
+
         # add card my self in a new card
         self_add = check_self_card(input)
         if self_add == true
@@ -130,16 +141,12 @@ class PrimesGameController
           if i != j
             change_index = [i, j]
             common_number = true
-            # p player_card
-            # player_card.delete_at(i)
-
             gcd_found = true
           end
         end
       end
     end
     if common_number
-      # p change_index.sort!
       player_card.delete_at(change_index[1])
       player_card.delete_at(change_index[0])
     end
@@ -164,7 +171,7 @@ class PrimesGameController
     while true
       input = gets.chomp
       if input.split(" ").length == 2
-        if input.split(" ")[0] == "a"
+        if input.split(" ")[0] == "a" || input.split(" ")[0] == "s"
           if is_integer?(input.split(" ")[1])
             add_avg = input.split(" ")[1].to_i
             is_add_avg = true
@@ -221,5 +228,8 @@ class PrimesGameController
         end
       end
     end
+  end
+
+  def take_next_card
   end
 end
