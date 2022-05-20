@@ -1,9 +1,10 @@
 require_relative "player_model"
+require_relative "router"
 require "prime"
 require "set"
 
 class PrimesGameController
-  def initialize(player, range, cards)
+  def initialize(player, all_players, range, cards)
     @min_init = range[0]
     @max_init = range[1]
     @default_primes = Prime.each(@max_init).to_a
@@ -11,6 +12,9 @@ class PrimesGameController
     @num_cards = cards
     @id = 1
     @player = player
+    @all_players = all_players
+    @current_player = @player
+    @round = 1
     @lucky_number = rand(2..99)
     @current_possibles = []
   end
@@ -24,19 +28,27 @@ class PrimesGameController
   end
 
   def set_player_as_current(player)
-    @player = player
+    @current_player = player
+  end
+
+  def get_current_player
+    @current_player
   end
 
   def get_lucky_number
     return @lucky_number
   end
 
+  def get_current_round
+    @round
+  end
+
   def prompt
     puts ""
     puts "Which two numbers you want to select to add their sum to your last array"
-    puts "For example, type: #{@player.get_cards[0]}  #{@player.get_cards[1]}" if @player.get_cards.size > 1
-    puts "Or you can use one power to add average #{@player.get_cards_average} directly to any number."
-    puts "For example, type: a #{@player.get_cards[0]}"
+    puts "For example, type: #{@current_player.get_cards[0]}  #{@current_player.get_cards[1]}" if @current_player.get_cards.size > 1
+    puts "Or you can use one power to add average #{@current_player.get_cards_average} directly to any number."
+    puts "For example, type: a #{@current_player.get_cards[0]}"
     puts "Or you can take rival's card to add to the sum to your greatest card."
     puts "For example, type: s (river's card)"
   end
@@ -47,13 +59,23 @@ class PrimesGameController
       prompt
       input = input_filter()
       puts ""
-
-      if input.instance_of?(Integer)
-        # add average into one of my card
-        add_avg = add_average_card(input)
-        if add_avg == true
-          running = false
-          return 1
+      action = input[0]
+      value = input[1]
+      if input[0].instance_of?(String)
+        if action == "a"
+          # add average into one of my card
+          add_avg = add_average_card(value)
+          if add_avg == true
+            running = false
+            return 1
+          end
+        else
+          # take next card
+          take_card = check_next_card(value)
+          if take_card == true
+            running = false
+            return 1
+          end
         end
       else
 
@@ -71,14 +93,14 @@ class PrimesGameController
   end
 
   def change_cards(new_cards)
-    @player.change_cards(new_cards)
+    @current_player.change_cards(new_cards)
   end
 
   def check_self_card(index)
     return [-1, -1] if index == false
     if index[0] != "a"
       # Add number directly
-      player_card = @player.get_cards
+      player_card = @current_player.get_cards
       p index.map { |x| player_card.include?(x) }.all? { |t| t == true }
       return index.map { |x| player_card.include?(x) }.all? { |t| t == true }
     end
@@ -86,7 +108,7 @@ class PrimesGameController
 
   def add_self_card(index1, index2)
     return "Invalid" if index1 == -1 || index2 == -1
-    player_card = @player.get_cards
+    player_card = @current_player.get_cards
     # new_value = player_card[index1] + player_card[index2]
     new_value = index1 + index2
     player_card.flatten!
@@ -97,8 +119,8 @@ class PrimesGameController
   end
 
   def add_average_card(current_card)
-    player_card = @player.get_cards
-    current_avg = @player.get_cards_average
+    player_card = @current_player.get_cards
+    current_avg = @current_player.get_cards_average
     # p player_card
     # p current_avg
     # p current_card
@@ -106,11 +128,30 @@ class PrimesGameController
       #new_value = player_card[player_card.index(current_card)] + current_avg
       player_card[player_card.index(current_card)] += current_avg
       p player_card
-      @player.change_cards(player_card)
-      @player.reduce_powers
+      @current_player.change_cards(player_card)
+      @current_player.reduce_powers
       return true
     else
       p "Error, you don't have #{current_card} in your cards!"
+      return false
+    end
+  end
+
+  def check_next_card(current_card)
+    player_card = @current_player.get_cards
+    next_player_card = get_next_player.get_cards
+    if next_player_card.include?(current_card)
+      # Only allow if other person'card size > 2
+      if next_player_card.size > 2
+        @current_player.get_cards[-1] += current_card
+        next_player_card.delete(current_card)
+        return true
+      else
+        p "Error, the other person must have more than 2 cards!"
+        return false
+      end
+    else
+      p "Error, the rival does not have #{current_card}"
       return false
     end
   end
@@ -119,7 +160,7 @@ class PrimesGameController
     gcd_found = false
     common_number = false
     change_index = [-1, -1]
-    player_card = @player.get_cards
+    player_card = @current_player.get_cards
     player_card.each_with_index do |x, i|
       player_card.each_with_index do |y, j|
         break if gcd_found == true
@@ -198,7 +239,7 @@ class PrimesGameController
       end
     end
     if is_add_avg
-      return add_avg
+      return [input[0], add_avg]
     else
       return input.split(" ").to_a.map { |m| m.to_i }
     end
@@ -218,7 +259,7 @@ class PrimesGameController
   end
 
   def calculate_current_possibles
-    player_card = @player.get_cards
+    player_card = @current_player.get_cards
     player_card.each_with_index do |x, i|
       player_card.each_with_index do |y, j|
         if i != j
@@ -230,6 +271,30 @@ class PrimesGameController
     end
   end
 
+  def get_next_player
+    next_player_index = @all_players.index(@current_player) + 1
+    if next_player_index < @all_players.size
+      return @all_players[next_player_index]
+    else
+      return @all_players[0]
+    end
+  end
+
   def take_next_card
+  end
+
+  def finished_current_round
+    # Get the current round of player index
+    current_round = @all_players.index(@current_player)
+
+    if @current_player == @all_players[-1]
+      # If the player is last, go to the new round and set current 0
+      @current_player = @all_players[0]
+      @round += 1
+    else
+      # If the player is not last, keep going
+      @current_player = @all_players[current_round + 1]
+    end
+    set_player_as_current(@current_player)
   end
 end

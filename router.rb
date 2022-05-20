@@ -5,12 +5,11 @@ class Router
     @id = 1
     @player = Player.new("player#{@id}", @id)
     @rival = Player.new("Rival", @id + 1)
-    @all_players = [0, @player, @rival]
-    @primes_game = PrimesGameController.new(@player, range, cards)
+    @all_players = [@player, @rival]
+    @primes_game = PrimesGameController.new(@player, @all_players, range, cards)
     @running = true
     @inputing = false
     @current_run = false
-    @current_player = @player
     @round = 1
     @original = []
     @game_points = 0
@@ -35,11 +34,11 @@ class Router
 
     @original = @player.get_cards.clone
 
-    # pause
+    pause
     start_time = Time.now
     @player.append_to_history
     while @current_run == true
-      system "clear"
+      #system "clear"
 
       # ------------Test score-------------
       # osum = 100
@@ -51,46 +50,47 @@ class Router
       # -----------------------------------
 
       # p "Lucky Number: #{@primes_game.get_lucky_number}"
-      puts "---------------Round #{@round}---------------"
+      puts "---------------Round #{@primes_game.get_current_round}---------------"
       puts ""
-      puts "---------------Player #{@current_player.get_id}---------------"
+      puts "---------------Player #{@primes_game.get_current_player.get_id}---------------"
       puts ""
-      puts "Uniqueness #{@current_player.get_uniqueness}, rate: #{@current_player.get_uniqueness_rate(@round)}%"
+      puts "Uniqueness #{@primes_game.get_current_player.get_uniqueness}, rate: #{@primes_game.get_current_player.get_uniqueness_rate(@primes_game.get_current_round)}%"
       @primes_game.reset_current_possibles
       @primes_game.auto_reduce_fraction
-      p "#{@current_player.get_cards}"
+      p "#{@primes_game.get_current_player.get_cards}"
       puts ""
-      p "<#{@current_player.get_cards_average}>"
-      p "Powers: #{@current_player.get_powers}"
+      p "<#{@primes_game.get_current_player.get_cards_average}>"
+      p "Powers: #{@primes_game.get_current_player.get_powers}"
       @primes_game.calculate_current_possibles
       @primes_game.get_current_possibles
       puts ""
+      p @primes_game.get_next_player
 
       # Get another player's card
-      if @current_player == @player
+      if @primes_game.get_current_player == @player
         p @rival.get_cards
       else
         p @player.get_cards
       end
 
-      win(start_time) if @current_player.get_cards.size <= 1
-      lose(start_time, "Exceed Cards") if @current_player.get_cards.size >= @original.size + 3
-      lose(start_time, "No Powers") if @current_player.get_powers < 1
+      win(start_time) if @primes_game.get_current_player.get_cards.size <= 1
+      lose(start_time, "Exceed Cards") if @primes_game.get_current_player.get_cards.size >= @original.size + 3
+      lose(start_time, "No Powers") if @primes_game.get_current_player.get_powers < 1
 
       @primes_game.prompt_add
       @primes_game.auto_reduce_fraction
-      @current_player.get_cards
+      @primes_game.get_current_player.get_cards
 
-      @round += 1
       @primes_game.auto_reduce_fraction
-      @current_player.append_to_history
+      @primes_game.get_current_player.append_to_history
 
-      finished_current_round
+      @primes_game.finished_current_round
     end
   end
 
   def game_points_calculate(total_time)
-    score = (((@original.sum ** Math.cbrt(@original.sum.size) ** 0.9) / (@round * 4 + total_time / 4)) ** 1.5).to_i
+    round = @primes_game.get_current_round
+    score = (((@original.sum ** Math.cbrt(@original.sum.size) ** 0.9) / (round * 4 + total_time / 4)) ** 1.5).to_i
     return 1 if score < 1
     return score
   end
@@ -103,7 +103,7 @@ class Router
     puts "You Win!"
     puts "Original cards: #{@original}"
     display_history
-    puts "Rounds took: #{@round - 1}"
+    puts "Rounds took: #{@primes_game.get_current_round - 1}"
     puts "Time took: #{total_time.round(2)}s"
     puts "Your score: #{game_points_calculate(total_time).to_i}"
     puts "---------------------------------------"
@@ -119,7 +119,7 @@ class Router
     puts reason
     puts "Original cards: #{@original}"
     display_history
-    puts "Rounds took: #{@round - 1}"
+    puts "Rounds took: #{@primes_game.get_current_round - 1}"
     puts "Time took: #{total_time.round(2)}s"
     puts "Your score: 0"
     puts "---------------------------------------"
@@ -127,18 +127,8 @@ class Router
   end
 
   def display_history
-    @current_player.get_current_history.each_with_index do |h, i|
+    @primes_game.get_current_player.get_current_history.each_with_index do |h, i|
       puts "Step #{i} #{h}"
     end
-  end
-
-  def finished_current_round
-    @round += 1
-    if @current_player == @player
-      @current_player = @rival
-    else
-      @current_player = @player
-    end
-    @primes_game.set_player_as_current(@current_player)
   end
 end
