@@ -5,7 +5,8 @@ class Router
     @id = 1
     @player = Player.new("player#{@id}", @id)
     @rival = Player.new("Rival", @id + 1)
-    @all_players = [@player, @rival]
+    @rival2 = Player.new("Rival2", @id + 1)
+    @all_players = [@player, @rival, @rival2]
     # @all_players = [@player]
     @primes_game = PrimesGameController.new(@all_players, range, cards)
     @running = true
@@ -42,7 +43,7 @@ class Router
     @player.append_to_history
     while @current_run == true
       system "clear"
-
+      p @all_players
       # ------------Test score-------------
       # osum = 100
       # olen = 4
@@ -71,16 +72,17 @@ class Router
       puts ""
 
       # Get another player's card
-      if @primes_game.get_current_player == @player
-        p @primes_game.get_next_player.get_cards
-      else
-        p @primes_game.get_first_player.get_cards
-      end
+      @primes_game.get_next_player_cards
+
+      # Start the main process
       main_process_add_reduce_display_append
+
+      # Check game over
       game_over(start_time, "Win") if @primes_game.get_current_player.get_cards.size <= 1
       game_over(start_time, "Lose") if @primes_game.get_current_player.get_cards.size >= @player.get_original_card.size + 3
       game_over(start_time, "Lose") if @primes_game.get_current_player.get_powers < 1
 
+      # Finishing this round
       @primes_game.finished_current_round
     end
   end

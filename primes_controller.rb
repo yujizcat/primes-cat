@@ -291,6 +291,14 @@ class PrimesGameController
     end
   end
 
+  def get_next_player_cards
+    if get_current_player != @all_players[-1]
+      p get_next_player.get_cards
+    else
+      p get_first_player.get_cards
+    end
+  end
+
   def finished_current_round
     # Get the current round of player index
     current_round = @all_players.index(@current_player)
