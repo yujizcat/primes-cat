@@ -1,13 +1,9 @@
 require_relative "primes_controller"
 
 class Router
-  def initialize(range, cards)
+  def initialize(players, range, cards)
     @id = 1
-    @player = Player.new("player#{@id}", @id)
-    @rival = Player.new("Rival", @id + 1)
-    @rival2 = Player.new("Rival2", @id + 1)
-    @all_players = [@player, @rival, @rival2]
-    # @all_players = [@player]
+    @all_players = players
     @primes_game = PrimesGameController.new(@all_players, range, cards)
     @running = true
     @inputing = false
@@ -25,6 +21,7 @@ class Router
   def run
     @all_players.each do |player|
       @primes_game.set_up(player)
+      player.append_to_history
     end
 
     puts "----------"
@@ -40,10 +37,9 @@ class Router
 
     # pause
     start_time = Time.now
-    @player.append_to_history
+
     while @current_run == true
       system "clear"
-      p @all_players
       # ------------Test score-------------
       # osum = 100
       # olen = 4
@@ -79,7 +75,7 @@ class Router
 
       # Check game over
       game_over(start_time, "Win") if @primes_game.get_current_player.get_cards.size <= 1
-      game_over(start_time, "Lose") if @primes_game.get_current_player.get_cards.size >= @player.get_original_card.size + 3
+      game_over(start_time, "Lose") if @primes_game.get_current_player.get_cards.size >= @primes_game.get_current_player.get_original_card.size + 3
       game_over(start_time, "Lose") if @primes_game.get_current_player.get_powers < 1
 
       # Finishing this round
