@@ -22,8 +22,9 @@ class Router
   end
 
   def run
-    @primes_game.set_up(@player)
-    @primes_game.set_up(@rival)
+    @all_players.each do |player|
+      @primes_game.set_up(player)
+    end
 
     puts "----------"
     @current_run = true
@@ -33,7 +34,8 @@ class Router
     # @primes_game.change_cards([2, 3, 5])
     # ------------------------
 
-    @original = @player.get_cards.clone
+    # Make a clone of each player's original cards
+    # @original = @player.get_cards.clone
 
     # pause
     start_time = Time.now
@@ -75,19 +77,21 @@ class Router
         p @primes_game.get_first_player.get_cards
       end
 
-      win(start_time) if @primes_game.get_current_player.get_cards.size <= 1
-      lose(start_time, "Exceed Cards") if @primes_game.get_current_player.get_cards.size >= @original.size + 3
-      lose(start_time, "No Powers") if @primes_game.get_current_player.get_powers < 1
+      game_over(start_time, "Win") if @primes_game.get_current_player.get_cards.size <= 1
+      game_over(start_time, "Lose") if @primes_game.get_current_player.get_cards.size >= @player.get_original_card.size + 3
+      game_over(start_time, "Lose") if @primes_game.get_current_player.get_powers < 1
 
-      @primes_game.prompt_add
-      @primes_game.auto_reduce_fraction
-      @primes_game.get_current_player.get_cards
-
-      @primes_game.auto_reduce_fraction
-      @primes_game.get_current_player.append_to_history
+      add_reduce_display_append
 
       @primes_game.finished_current_round
     end
+  end
+
+  def add_reduce_display_append
+    @primes_game.prompt_add
+    @primes_game.auto_reduce_fraction
+    @primes_game.get_current_player.get_cards
+    @primes_game.get_current_player.append_to_history
   end
 
   def game_points_calculate(total_time)
@@ -97,33 +101,21 @@ class Router
     return score
   end
 
-  def win(start_time)
+  def game_over(start_time, ending)
     end_time = Time.now
     total_time = end_time - start_time
     system "clear"
     puts "---------------------------------------"
-    puts "You Win!"
-    puts "Original cards: #{@original}"
+    puts "You #{ending}"
+    puts "Original cards: #{@player.get_original_card}"
     display_history
     puts "Rounds took: #{@primes_game.get_current_round - 1}"
     puts "Time took: #{total_time.round(2)}s"
-    puts "Your score: #{game_points_calculate(total_time).to_i}"
-    puts "---------------------------------------"
-    exit
-  end
-
-  def lose(start_time, reason)
-    end_time = Time.now
-    total_time = end_time - start_time
-    system "clear"
-    puts "---------------------------------------"
-    puts "You Lose!"
-    puts reason
-    puts "Original cards: #{@original}"
-    display_history
-    puts "Rounds took: #{@primes_game.get_current_round - 1}"
-    puts "Time took: #{total_time.round(2)}s"
-    puts "Your score: 0"
+    if ending == "Win"
+      puts "Your score: #{game_points_calculate(total_time).to_i}"
+    else
+      puts "Your score: 0"
+    end
     puts "---------------------------------------"
     exit
   end

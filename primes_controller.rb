@@ -25,6 +25,7 @@ class PrimesGameController
     end
     player.sort_cards
     player.set_init_powers
+    player.set_original_card
   end
 
   def set_player_as_current(player)
@@ -287,9 +288,6 @@ class PrimesGameController
     else
       return @all_players[0]
     end
-  end
-
-  def take_next_card
   end
 
   def finished_current_round

@@ -3,6 +3,7 @@ class Player
     @name = name
     @player_id = player_id
     @cards = []
+    @original_cards = []
     @points = 0
     @powers = 0
     @average_round = 0
@@ -15,6 +16,14 @@ class Player
 
   def get_id
     return @player_id
+  end
+
+  def set_original_card
+    @original_cards = @cards.clone
+  end
+
+  def get_original_card
+    @original_cards
   end
 
   def get_cards
