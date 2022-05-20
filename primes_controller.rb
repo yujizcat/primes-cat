@@ -54,7 +54,7 @@ class PrimesGameController
     puts "For example, type: #{@current_player.get_cards[0]}  #{@current_player.get_cards[1]}" if @current_player.get_cards.size > 1
     puts "Or you can use one power to add average #{@current_player.get_cards_average} directly to any number."
     puts "For example, type: a #{@current_player.get_cards[0]}"
-    puts "Or you can take rival's card to add to the sum to your greatest card."
+    puts "Or you can use one power to take rival's card to add to the sum to your greatest card."
     puts "For example, type: s (river's card)"
   end
 
@@ -118,7 +118,7 @@ class PrimesGameController
     new_value = index1 + index2
     player_card.flatten!
     player_card.push(new_value.to_i)
-    p player_card
+    # p player_card
     auto_reduce_fraction()
     return player_card
   end
@@ -130,9 +130,9 @@ class PrimesGameController
     # p current_avg
     # p current_card
     if player_card.include?(current_card)
-      #new_value = player_card[player_card.index(current_card)] + current_avg
+      # new_value = player_card[player_card.index(current_card)] + current_avg
       player_card[player_card.index(current_card)] += current_avg
-      p player_card
+      # p player_card
       @current_player.change_cards(player_card)
       @current_player.reduce_powers
       return true
@@ -155,6 +155,7 @@ class PrimesGameController
       if next_player_card.size > 2
         @current_player.get_cards[-1] += current_card
         next_player_card.delete(current_card)
+        @current_player.reduce_powers
         return true
       else
         p "Error, the other person must have more than 2 cards!"

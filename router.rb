@@ -5,8 +5,8 @@ class Router
     @id = 1
     @player = Player.new("player#{@id}", @id)
     @rival = Player.new("Rival", @id + 1)
-    # @all_players = [@player, @rival]
-    @all_players = [@player]
+    @all_players = [@player, @rival]
+    # @all_players = [@player]
     @primes_game = PrimesGameController.new(@all_players, range, cards)
     @running = true
     @inputing = false
@@ -57,7 +57,7 @@ class Router
       # Get current round and player
       puts "---------------Round #{@primes_game.get_current_round}---------------"
       puts ""
-      puts "---------------Player #{@primes_game.get_current_player.get_id}---------------"
+      puts "---------------#{@primes_game.get_current_player.get_name}---------------"
       puts ""
       puts "Uniqueness #{@primes_game.get_current_player.get_uniqueness}, rate: #{@primes_game.get_current_player.get_uniqueness_rate(@primes_game.get_current_round)}%"
       @primes_game.reset_current_possibles
@@ -76,18 +76,16 @@ class Router
       else
         p @primes_game.get_first_player.get_cards
       end
-
+      main_process_add_reduce_display_append
       game_over(start_time, "Win") if @primes_game.get_current_player.get_cards.size <= 1
       game_over(start_time, "Lose") if @primes_game.get_current_player.get_cards.size >= @player.get_original_card.size + 3
       game_over(start_time, "Lose") if @primes_game.get_current_player.get_powers < 1
-
-      add_reduce_display_append
 
       @primes_game.finished_current_round
     end
   end
 
-  def add_reduce_display_append
+  def main_process_add_reduce_display_append
     @primes_game.prompt_add
     @primes_game.auto_reduce_fraction
     @primes_game.get_current_player.get_cards
@@ -106,7 +104,7 @@ class Router
     total_time = end_time - start_time
     system "clear"
     puts "---------------------------------------"
-    puts "You #{ending}"
+    puts "#{@primes_game.get_current_player.get_name} #{ending}"
     puts "Original cards: #{@player.get_original_card}"
     display_history
     puts "Rounds took: #{@primes_game.get_current_round - 1}"

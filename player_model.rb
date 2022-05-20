@@ -10,12 +10,16 @@ class Player
     @current_history = []
   end
 
-  def init_cards(card)
-    @cards << card
-  end
-
   def get_id
     return @player_id
+  end
+
+  def get_name
+    return @name
+  end
+
+  def init_cards(card)
+    @cards << card
   end
 
   def set_original_card
