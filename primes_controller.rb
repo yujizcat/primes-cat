@@ -57,41 +57,53 @@ class PrimesGameController
     puts "For example, type: s (river's card)"
   end
 
-  def prompt_add
+  def prompt_add(already_input, input)
     running = true
     while running
       prompt
-      input = input_filter()
+      if already_input == true
+        #p "extra"
+        #p input
+        gets.chomp
+      else
+        input = input_filter()
+      end
+
       puts ""
-      action = input[0]
-      value = input[1]
-      if input[0].instance_of?(String)
-        if action == "a"
-          # add average into one of my card
-          add_avg = add_average_card(value)
-          if add_avg == true
-            running = false
-            return 1
+      p "tHE INPUT IS #{input}"
+      unless input == false
+        action = input[0]
+        value = input[1]
+        if input[0].instance_of?(String)
+          if action == "a"
+            # add average into one of my card
+            add_avg = add_average_card(value)
+            if add_avg == true
+              running = false
+              return 1
+            end
+          else
+            # take next card
+            take_card = check_next_card(value)
+            if take_card == true
+              running = false
+              return 1
+            end
           end
         else
-          # take next card
-          take_card = check_next_card(value)
-          if take_card == true
+
+          # add card my self in a new card
+          self_add = check_self_card(input)
+          if self_add == true
+            add_self_card(input[0], input[1])
             running = false
             return 1
+          else
+            puts "Invalid add, please re-try"
           end
         end
       else
-
-        # add card my self in a new card
-        self_add = check_self_card(input)
-        if self_add == true
-          add_self_card(input[0], input[1])
-          running = false
-          return 1
-        else
-          puts "Invalid add, please re-try"
-        end
+        puts "Error"
       end
     end
   end
@@ -128,6 +140,8 @@ class PrimesGameController
     # p player_card
     # p current_avg
     # p current_card
+    p player_card
+    p current_card
     if player_card.include?(current_card)
       # new_value = player_card[player_card.index(current_card)] + current_avg
       player_card[player_card.index(current_card)] += current_avg

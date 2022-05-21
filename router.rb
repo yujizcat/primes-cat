@@ -85,7 +85,7 @@ class Router
   end
 
   def main_process_add_reduce_display_append
-    @primes_game.prompt_add
+    @primes_game.prompt_add(false, "")
     @primes_game.auto_reduce_fraction(@primes_game.get_current_player.get_cards)
     @primes_game.get_current_player.get_cards
     @primes_game.get_current_player.append_to_history

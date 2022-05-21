@@ -24,9 +24,11 @@ class PrimesGameAI < PrimesGameController
       actions_sum_collect << card + @game.get_current_player.get_cards_average
     end
 
-    @game.get_next_player.get_cards.each do |card|
-      @current_actions_collect << "s #{card}"
-      actions_sum_collect << card + @game.get_next_player.get_cards_average
+    if @game.get_next_player.get_cards.size > 2
+      @game.get_next_player.get_cards.each do |card|
+        @current_actions_collect << "s #{card}"
+        actions_sum_collect << card + @game.get_next_player.get_cards_average
+      end
     end
 
     return actions_sum_collect
@@ -42,9 +44,9 @@ class PrimesGameAI < PrimesGameController
     @current_actions_collect.each do |poss|
       # Reset current and next card each loop
       current_cards = @game.get_current_player.get_cards.clone
-      next_cards = @game.get_next_player.get_cards.clone
+      # next_cards = @game.get_next_player.get_cards.clone
 
-      p poss
+      # p poss
 
       if is_integer?(poss[0])
         new_temp = poss.split(" ")[0].to_i + poss.split(" ")[1].to_i
@@ -61,8 +63,39 @@ class PrimesGameAI < PrimesGameController
       end
     end
     @all_next_possibles.map { |card| @game.auto_reduce_fraction(card) }
+    @all_next_possibles.map { |card| @game.auto_reduce_fraction(card) }
+    # @all_next_possibles.sort_by! { |x| x.size }
     p @all_next_possibles
+    begin_action
     return @all_next_possibles
+  end
+
+  def begin_action
+    p "begin action"
+    random_action
+  end
+
+  def random_action
+    def is_integer?(i)
+      i.to_i.to_s == i
+    end
+
+    input = @current_actions_collect.sample
+    p @game.get_current_player.get_cards
+    p @game.get_next_player.get_cards
+    if is_integer?(input[0])
+      input = input.split(" ").to_a.map { |m| m.to_i }
+    else
+      input = input.split(" ")
+      input[1] = input[1].to_i
+    end
+    p input
+    @game.prompt_add(true, input)
+  end
+
+  def get_shortest
+    shortest = @all_next_possibles.sort_by { |x| x.size }[0].size
+    p shortest
   end
 
   def reset_ai_actions
