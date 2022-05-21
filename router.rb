@@ -57,14 +57,16 @@ class Router
       p "<#{@primes_game.get_current_player.get_cards_average}>"
       p "Powers: #{@primes_game.get_current_player.get_powers}"
       @primes_game.calculate_current_possibles
-      @primes_game.display_current_possibles
+      # @primes_game.display_current_possibles
       puts ""
 
-      # Get another player's card
-      @primes_game.get_next_player_cards
+      if @all_players.size > 1
+        # Get another player's card
+        @primes_game.get_next_player_cards
+      end
 
       unless @primes_game.get_current_player.is_ai?
-        # Start the main process
+        # Start normal process
         main_process_add_reduce_display_append
       else
         # Start the AI process
@@ -73,12 +75,20 @@ class Router
         @primes_ai.reset_ai_actions
       end
 
-      # Check game over
-      game_over(start_time, "Win") if @primes_game.get_current_player.get_cards.size <= 1
-      game_over(start_time, "Lose") if @primes_game.get_current_player.get_cards.size >= @primes_game.get_current_player.get_original_card.size + 3
-      game_over(start_time, "Lose") if @primes_game.get_current_player.get_powers < 1
+      # Append history for every round
+      @primes_game.get_current_player.append_to_history
 
-      pause
+      # Check game over
+      if @primes_game.game_over? || @primes_game.get_current_player.get_cards.size <= 1
+        @primes_game.game_over
+        game_over(start_time, "Win")
+
+        # game_over(start_time, "Lose") if @primes_game.get_current_player.get_cards.size >= @primes_game.get_current_player.get_original_card.size + 3
+        #game_over(start_time, "Lose") if @primes_game.get_current_player.get_powers < 1
+      end
+
+      # pause
+
       # Finishing this round
       @primes_game.finished_current_round
     end
@@ -88,7 +98,6 @@ class Router
     @primes_game.prompt_add(false, "")
     @primes_game.auto_reduce_fraction(@primes_game.get_current_player.get_cards)
     @primes_game.get_current_player.get_cards
-    @primes_game.get_current_player.append_to_history
   end
 
   def game_points_calculate(total_time)

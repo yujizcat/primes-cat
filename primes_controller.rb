@@ -16,12 +16,26 @@ class PrimesGameController
     @round = 1
     @lucky_number = rand(2..99)
     @current_possibles = []
+    @game_over = false
+  end
+
+  def game_over?
+    @game_over
+  end
+
+  def game_over
+    @game_over = true
   end
 
   def set_up(player)
     [*1..@num_cards].each do |i|
       player.init_cards(@default_primes.delete(@default_primes.sample))
     end
+
+    #--------TEST ONLY---------
+    # player.change_cards([11, 32])
+    #--------------------------
+
     player.sort_cards
     player.set_init_powers
     player.set_original_card
@@ -29,6 +43,10 @@ class PrimesGameController
 
   def set_player_as_current(player)
     @current_player = player
+  end
+
+  def get_all_players
+    @all_players
   end
 
   def get_current_player
@@ -53,17 +71,17 @@ class PrimesGameController
     puts "For example, type: #{@current_player.get_cards[0]}  #{@current_player.get_cards[1]}" if @current_player.get_cards.size > 1
     puts "Or you can use one power to add average #{@current_player.get_cards_average} directly to any number."
     puts "For example, type: a #{@current_player.get_cards[0]}"
-    puts "Or you can use one power to take rival's card to add to the sum to your greatest card."
-    puts "For example, type: s (river's card)"
+    if @all_players.size > 1
+      puts "Or you can use one power to take rival's card to add to the sum to your greatest card."
+      puts "For example, type: s (river's card)"
+    end
   end
 
   def prompt_add(already_input, input)
     running = true
     while running
-      prompt
+      prompt unless @current_player.is_ai?
       if already_input == true
-        #p "extra"
-        #p input
         gets.chomp
       else
         input = input_filter()

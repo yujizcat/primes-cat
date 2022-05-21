@@ -24,7 +24,7 @@ class PrimesGameAI < PrimesGameController
       actions_sum_collect << card + @game.get_current_player.get_cards_average
     end
 
-    if @game.get_next_player.get_cards.size > 2
+    if @game.get_next_player.get_cards.size > 2 && @game.get_all_players.size > 1
       @game.get_next_player.get_cards.each do |card|
         @current_actions_collect << "s #{card}"
         actions_sum_collect << card + @game.get_next_player.get_cards_average
@@ -39,14 +39,11 @@ class PrimesGameAI < PrimesGameController
       i.to_i.to_s == i
     end
 
-    p @current_actions_collect
-    p sum_collections
+    # p @current_actions_collect
+    # p sum_collections
     @current_actions_collect.each do |poss|
       # Reset current and next card each loop
       current_cards = @game.get_current_player.get_cards.clone
-      # next_cards = @game.get_next_player.get_cards.clone
-
-      # p poss
 
       if is_integer?(poss[0])
         new_temp = poss.split(" ")[0].to_i + poss.split(" ")[1].to_i
@@ -65,24 +62,46 @@ class PrimesGameAI < PrimesGameController
     @all_next_possibles.map { |card| @game.auto_reduce_fraction(card) }
     @all_next_possibles.map { |card| @game.auto_reduce_fraction(card) }
     # @all_next_possibles.sort_by! { |x| x.size }
-    p @all_next_possibles
+    # p @all_next_possibles
     begin_action
     return @all_next_possibles
   end
 
   def begin_action
     p "begin action"
-    random_action
+    p @current_actions_collect
+    p @all_next_possibles
+    p "filter way"
+
+    shortest = get_shortest
+    if shortest != 0
+      shortest_possibles = @all_next_possibles.select { |a| a.size == shortest }
+      value = @current_actions_collect[@all_next_possibles.index(shortest_possibles.sample)]
+    else
+      value = ""
+    end
+
+    execute_action("short", value)
   end
 
-  def random_action
+  def execute_action(type, value)
     def is_integer?(i)
       i.to_i.to_s == i
     end
 
-    input = @current_actions_collect.sample
-    p @game.get_current_player.get_cards
-    p @game.get_next_player.get_cards
+    if value[0] == nil
+      p "over"
+      @game.game_over
+      return 0
+    end
+    case type
+    when "random"
+      p "random select"
+      input = @current_actions_collect.sample
+    when "short"
+      p "short select"
+      input = value
+    end
     if is_integer?(input[0])
       input = input.split(" ").to_a.map { |m| m.to_i }
     else
@@ -94,8 +113,8 @@ class PrimesGameAI < PrimesGameController
   end
 
   def get_shortest
-    shortest = @all_next_possibles.sort_by { |x| x.size }[0].size
-    p shortest
+    shortest = @all_next_possibles.sort_by { |x| x.size }[0].size if @current_actions_collect.size > 0
+    return shortest
   end
 
   def reset_ai_actions
