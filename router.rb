@@ -28,14 +28,6 @@ class Router
     @current_run = true
     pause
 
-    # -------Test only--------
-    # @primes_game.change_cards([2, 3, 5])
-    # ------------------------
-
-    # Make a clone of each player's original cards
-    # @original = @player.get_cards.clone
-
-    # pause
     start_time = Time.now
 
     while @current_run == true
@@ -73,11 +65,13 @@ class Router
       # Start the main process
       main_process_add_reduce_display_append
 
+      p @primes_game.get_current_player.get_cards.size
       # Check game over
       game_over(start_time, "Win") if @primes_game.get_current_player.get_cards.size <= 1
       game_over(start_time, "Lose") if @primes_game.get_current_player.get_cards.size >= @primes_game.get_current_player.get_original_card.size + 3
       game_over(start_time, "Lose") if @primes_game.get_current_player.get_powers < 1
 
+      pause
       # Finishing this round
       @primes_game.finished_current_round
     end
@@ -103,9 +97,9 @@ class Router
     system "clear"
     puts "---------------------------------------"
     puts "#{@primes_game.get_current_player.get_name} #{ending}"
-    puts "Original cards: #{@player.get_original_card}"
+    puts "Original cards: #{@primes_game.get_current_player.get_original_card}"
     display_history
-    puts "Rounds took: #{@primes_game.get_current_round - 1}"
+    puts "Rounds took: #{@primes_game.get_current_round}"
     puts "Time took: #{total_time.round(2)}s"
     if ending == "Win"
       puts "Your score: #{game_points_calculate(total_time).to_i}"
