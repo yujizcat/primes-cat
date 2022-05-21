@@ -1,10 +1,11 @@
 require_relative "primes_controller"
+require_relative "primes_ai"
 
 class Router
   def initialize(players, range, cards)
-    @id = 1
     @all_players = players
     @primes_game = PrimesGameController.new(@all_players, range, cards)
+    @primes_ai = PrimesGameAI.new(@primes_game)
     @running = true
     @inputing = false
     @current_run = false
@@ -50,22 +51,28 @@ class Router
       puts ""
       puts "Uniqueness #{@primes_game.get_current_player.get_uniqueness}, rate: #{@primes_game.get_current_player.get_uniqueness_rate(@primes_game.get_current_round)}%"
       @primes_game.reset_current_possibles
-      @primes_game.auto_reduce_fraction
+      @primes_game.auto_reduce_fraction(@primes_game.get_current_player.get_cards)
       p "#{@primes_game.get_current_player.get_cards}"
       puts ""
       p "<#{@primes_game.get_current_player.get_cards_average}>"
       p "Powers: #{@primes_game.get_current_player.get_powers}"
       @primes_game.calculate_current_possibles
-      @primes_game.get_current_possibles
+      @primes_game.display_current_possibles
       puts ""
 
       # Get another player's card
       @primes_game.get_next_player_cards
 
-      # Start the main process
-      main_process_add_reduce_display_append
+      unless @primes_game.get_current_player.is_ai?
+        # Start the main process
+        main_process_add_reduce_display_append
+      else
+        # Start the AI process
+        # Collect all possible first then test
+        @primes_ai.test_collections(@primes_ai.collect_all_actions)
+        @primes_ai.reset_ai_actions
+      end
 
-      p @primes_game.get_current_player.get_cards.size
       # Check game over
       game_over(start_time, "Win") if @primes_game.get_current_player.get_cards.size <= 1
       game_over(start_time, "Lose") if @primes_game.get_current_player.get_cards.size >= @primes_game.get_current_player.get_original_card.size + 3
@@ -79,7 +86,7 @@ class Router
 
   def main_process_add_reduce_display_append
     @primes_game.prompt_add
-    @primes_game.auto_reduce_fraction
+    @primes_game.auto_reduce_fraction(@primes_game.get_current_player.get_cards)
     @primes_game.get_current_player.get_cards
     @primes_game.get_current_player.append_to_history
   end

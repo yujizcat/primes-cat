@@ -10,7 +10,6 @@ class PrimesGameController
     @default_primes = Prime.each(@max_init).to_a
     @default_primes = @default_primes.select { |x| x >= @min_init }.map { |x| x }
     @num_cards = cards
-    @id = 1
     @all_players = all_players
     @player = @all_players[0]
     @current_player = @player
@@ -119,7 +118,7 @@ class PrimesGameController
     player_card.flatten!
     player_card.push(new_value.to_i)
     # p player_card
-    auto_reduce_fraction()
+    auto_reduce_fraction(player_card)
     return player_card
   end
 
@@ -167,11 +166,11 @@ class PrimesGameController
     end
   end
 
-  def auto_reduce_fraction
+  def auto_reduce_fraction(player_card)
     gcd_found = false
     common_number = false
     change_index = [-1, -1]
-    player_card = @current_player.get_cards
+    #player_card = @current_player.get_cards
     player_card.each_with_index do |x, i|
       player_card.each_with_index do |y, j|
         break if gcd_found == true
@@ -257,6 +256,10 @@ class PrimesGameController
   end
 
   def get_current_possibles
+    @current_possibles
+  end
+
+  def display_current_possibles
     puts ""
     puts "----All possibles----"
     @current_possibles.each do |poss|

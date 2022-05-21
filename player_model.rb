@@ -1,5 +1,5 @@
 class Player
-  def initialize(name, player_id)
+  def initialize(name, player_id, is_ai)
     @name = name
     @player_id = player_id
     @cards = []
@@ -8,6 +8,7 @@ class Player
     @powers = 0
     @average_round = 0
     @current_history = []
+    @is_ai = is_ai
   end
 
   def get_id
@@ -83,5 +84,9 @@ class Player
   def reduce_powers
     @powers -= 1
     return @powers
+  end
+
+  def is_ai?
+    @is_ai
   end
 end
