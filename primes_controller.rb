@@ -33,7 +33,7 @@ class PrimesGameController
     end
 
     #--------TEST ONLY---------
-    # player.change_cards([11, 32])
+    # player.change_cards([2, 3, 7])
     #--------------------------
 
     player.sort_cards
@@ -346,6 +346,9 @@ class PrimesGameController
       # If the player is not last, keep going
       @current_player = @all_players[current_round + 1]
     end
+
+    @current_player.clean_powers if @current_player.get_powers <= 0
+
     set_player_as_current(@current_player)
   end
 end

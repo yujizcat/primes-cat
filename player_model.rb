@@ -86,6 +86,10 @@ class Player
     return @powers
   end
 
+  def clean_powers
+    @powers = 0
+  end
+
   def is_ai?
     @is_ai
   end

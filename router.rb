@@ -71,8 +71,10 @@ class Router
       else
         # Start the AI process
         # Collect all possible first then test
-        @primes_ai.test_collections(@primes_ai.collect_all_actions)
+        @primes_ai.test_collections(@primes_ai.collect_all_actions(@primes_game.get_current_player.get_cards, false))
         @primes_ai.reset_ai_actions
+        @primes_game.auto_reduce_fraction(@primes_game.get_current_player.get_cards)
+        @primes_game.get_current_player.get_cards
       end
 
       # Append history for every round
