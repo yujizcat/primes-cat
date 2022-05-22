@@ -1,9 +1,10 @@
 class Player
-  def initialize(name, player_id, is_ai)
+  def initialize(name, player_id, is_ai, num_cards)
     @name = name
     @player_id = player_id
     @cards = []
     @original_cards = []
+    @init_num_cards = num_cards
     @points = 0
     @powers = 0
     @average_round = 0
@@ -17,6 +18,10 @@ class Player
 
   def get_name
     return @name
+  end
+
+  def get_init_num_cards
+    return @init_num_cards
   end
 
   def init_cards(card)

@@ -2,9 +2,9 @@ require_relative "primes_controller"
 require_relative "primes_ai"
 
 class Router
-  def initialize(players, range, cards)
+  def initialize(players, range)
     @all_players = players
-    @primes_game = PrimesGameController.new(@all_players, range, cards)
+    @primes_game = PrimesGameController.new(@all_players, range)
     @primes_ai = PrimesGameAI.new(@primes_game)
     @running = true
     @inputing = false

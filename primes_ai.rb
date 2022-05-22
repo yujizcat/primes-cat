@@ -7,7 +7,7 @@ class PrimesGameAI < PrimesGameController
     @all_next_possibles = []
     @percentage_chance = 0
     @ai_input = nil
-    @difficulty = 50
+    @difficulty = 100
   end
 
   def collect_all_actions(card_collect, is_testing)
@@ -99,7 +99,7 @@ class PrimesGameAI < PrimesGameController
     end
 
     unless is_in_last
-      if @game.get_current_player.get_uniqueness_rate(@game.get_current_round) < 95 || @percentage_chance >= @difficulty
+      if @game.get_current_player.get_uniqueness_rate(@game.get_current_round) < 60 || @percentage_chance >= @difficulty
         execute_action("random", @ai_input)
       else
         execute_action("special", @ai_input)
