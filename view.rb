@@ -3,6 +3,13 @@ class PrimesView
     @game = game
   end
 
+  def display_welcome
+    puts ""
+    puts "Welcome #{@game.get_current_player.get_name}"
+    puts ""
+    puts "Your level is #{@game.get_current_player.get_level_name}"
+  end
+
   def display_top
     puts "             #{@game.get_model}"
     puts ""
@@ -13,6 +20,7 @@ class PrimesView
   def display_bottom
     puts ""
     puts "----------#{@game.get_current_player.get_name}    ID #{@game.get_current_player.get_id}----------"
+    puts @game.get_current_player.get_level_name
     puts ""
   end
 

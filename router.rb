@@ -24,10 +24,12 @@ class Router
   def run
 
     #----TEST BEFORE SETTING----
-    @all_players[0].change_level(1)
+    puts "Welcome #{@all_players[0].get_name}. Please Enter your level: "
+    my_level = gets.chomp
+    @all_players[0].change_level(my_level.to_i)
     @all_players[0].reset_player
-    @all_players[1].change_level(8)
-    @all_players[1].reset_player
+    #@all_players[1].change_level(8)
+    #@all_players[1].reset_player
     #---------------------------
 
     @all_players.each do |player|
@@ -35,7 +37,7 @@ class Router
       player.append_to_history
     end
 
-    puts "----------"
+    @primes_view.display_welcome
     @current_run = true
     pause
 

@@ -41,6 +41,75 @@ class Player
     return @level
   end
 
+  def get_level_name
+    case @level
+    when 0
+      "小白"
+    when 1
+      "初级青铜"
+    when 2
+      "中级青铜"
+    when 3
+      "高级青铜"
+    when 4
+      "特级青铜"
+    when 5
+      "初级白银"
+    when 6
+      "中级白银"
+    when 7
+      "高级白银"
+    when 8
+      "特级白银"
+    when 9
+      "初级黄金"
+    when 10
+      "中级黄金"
+    when 11
+      "高级黄金"
+    when 12
+      "特级黄金"
+    when 13
+      "初级铂金"
+    when 14
+      "中级铂金"
+    when 15
+      "高级铂金"
+    when 16
+      "特级铂金"
+    when 17
+      "初级钻石"
+    when 18
+      "中级钻石"
+    when 19
+      "高级钻石"
+    when 20
+      "特级钻石"
+    when 21
+      "初级星耀"
+    when 22
+      "中级星耀"
+    when 23
+      "高级星耀"
+    when 24
+      "特级星耀"
+    when 25
+      "黄金王者"
+    when 26
+      "铂金王者"
+    when 27
+      "钻石王者"
+    when 28
+      "星耀王者"
+    when 29
+      "传奇王者"
+    when 30
+      "创世神"
+    else
+      return "游客"
+    end
+  end
+
   def determine_level
     # Set up player's default number of cards, range by level
     each_max = [50, 100, 200, 500, 1000, 2000, 5000, 10000]
@@ -48,9 +117,15 @@ class Player
     case @level
     when 0
       [0, 50, 3]
-    else
+    when 1..28
       level_index = (@level - 1) / 4
       [if @level % 4 <= 2 && @level % 4 != 0 then 0 else each_max[level_index] end, each_max[level_index + 1], num_cards]
+    when 29
+      [10000, 100000, 5]
+    when 30
+      [0, 1000000, 5]
+    else
+      [0, 50, 3]
     end
   end
 
