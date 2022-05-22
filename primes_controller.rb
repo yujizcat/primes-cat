@@ -60,6 +60,14 @@ class PrimesGameController
     @round
   end
 
+  def get_model
+    if @all_players.size >= 2
+      return "Competitive Model"
+    else
+      return "Solo Model"
+    end
+  end
+
   def prompt
     puts ""
     puts "Which two numbers you want to select to add their sum to your last array"
@@ -75,7 +83,7 @@ class PrimesGameController
   def prompt_add(already_input, input)
     running = true
     while running
-      prompt unless @current_player.is_ai?
+      # prompt unless @current_player.is_ai?
       if already_input == true
         gets.chomp
       else
@@ -83,7 +91,7 @@ class PrimesGameController
       end
 
       puts ""
-      p "tHE INPUT IS #{input}"
+      p "THE INPUT IS #{input}"
       unless input == false
         action = input[0]
         value = input[1]

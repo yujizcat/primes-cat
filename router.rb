@@ -7,6 +7,7 @@ class Router
     @all_players = players
     @primes_game = PrimesGameController.new(@all_players)
     @primes_ai = PrimesGameAI.new(@primes_game)
+    @primes_view = PrimesView.new(@primes_game)
     @running = true
     @inputing = false
     @current_run = false
@@ -21,6 +22,14 @@ class Router
   end
 
   def run
+
+    #----TEST BEFORE SETTING----
+    @all_players[0].change_level(1)
+    @all_players[0].reset_player
+    @all_players[1].change_level(8)
+    @all_players[1].reset_player
+    #---------------------------
+
     @all_players.each do |player|
       @primes_game.set_up(player)
       player.append_to_history
@@ -35,27 +44,27 @@ class Router
     while @current_run == true
       system "clear"
 
-      # Get current round and player
-      puts "---------------Round #{@primes_game.get_current_round}---------------"
-      puts ""
-      puts "---------------#{@primes_game.get_current_player.get_name}---------------"
-      puts "---------------ID #{@primes_game.get_current_player.get_id}---------------"
-      puts ""
-      puts "Uniqueness #{@primes_game.get_current_player.get_uniqueness}, rate: #{@primes_game.get_current_player.get_uniqueness_rate(@primes_game.get_current_round)}%"
+      # puts "Uniqueness #{@primes_game.get_current_player.get_uniqueness}, rate: #{@primes_game.get_current_player.get_uniqueness_rate(@primes_game.get_current_round)}%"
       @primes_game.reset_current_possibles
       @primes_game.auto_reduce_fraction(@primes_game.get_current_player.get_cards)
-      p "#{@primes_game.get_current_player.get_cards}"
-      puts ""
-      p "<#{@primes_game.get_current_player.get_cards_average}>"
-      p "Powers: #{@primes_game.get_current_player.get_powers}"
+
       @primes_game.calculate_current_possibles
       # @primes_game.display_current_possibles
       puts ""
 
+      # Beginning Display
+      @primes_view.display_top
       if @all_players.size > 1
         # Get another player's card
-        @primes_game.get_next_player_cards
+
+        @primes_view.display_cards("rival")
       end
+
+      @primes_view.display_space
+
+      @primes_view.display_cards("me")
+
+      @primes_view.display_bottom
 
       unless @primes_game.get_current_player.is_ai?
         # Start normal process

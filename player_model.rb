@@ -1,18 +1,28 @@
 require "prime"
 
 class Player
-  def initialize(name, is_ai, level)
+  def initialize(name, is_ai)
     @name = name
     @player_id = rand(1001..9999)
     @cards = []
     @original_cards = []
-    @level = level
+    @level = 0
     @points = 0
     @powers = 0
     @average_round = 0
     @current_history = []
     @is_ai = is_ai
     # p determine_level
+    @min_range = determine_level[0]
+    @max_range = determine_level[1]
+    @init_num_cards = determine_level[2]
+    @default_primes = Prime.each(@max_range).to_a.select { |x| x >= @min_range }.map { |x| x }
+  end
+
+  def reset_player
+    @cards = []
+    @original_cards = []
+    @current_history = []
     @min_range = determine_level[0]
     @max_range = determine_level[1]
     @init_num_cards = determine_level[2]
@@ -27,13 +37,17 @@ class Player
     return @name
   end
 
+  def get_level
+    return @level
+  end
+
   def determine_level
     # Set up player's default number of cards, range by level
     each_max = [50, 100, 200, 500, 1000, 2000, 5000, 10000]
     num_cards = if @level.odd? then 3 else 4 end
     case @level
     when 0
-      [0, 50, 0]
+      [0, 50, 3]
     else
       level_index = (@level - 1) / 4
       [if @level % 4 <= 2 && @level % 4 != 0 then 0 else each_max[level_index] end, each_max[level_index + 1], num_cards]
@@ -75,6 +89,10 @@ class Player
 
   def change_cards(new_cards)
     @cards = new_cards
+  end
+
+  def change_level(level)
+    @level = level
   end
 
   def get_points
