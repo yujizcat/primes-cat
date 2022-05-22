@@ -4,11 +4,7 @@ require "prime"
 require "set"
 
 class PrimesGameController
-  def initialize(all_players, range)
-    @min_init = range[0]
-    @max_init = range[1]
-    @default_primes = Prime.each(@max_init).to_a
-    @default_primes = @default_primes.select { |x| x >= @min_init }.map { |x| x }
+  def initialize(all_players)
     @all_players = all_players
     @player = @all_players[0]
     @current_player = @player
@@ -28,7 +24,7 @@ class PrimesGameController
 
   def set_up(player)
     [*1..player.get_init_num_cards].each do |i|
-      player.init_cards(@default_primes.delete(@default_primes.sample))
+      player.init_cards(player.get_init_primes.delete(player.get_init_primes.sample))
     end
 
     #--------TEST ONLY---------

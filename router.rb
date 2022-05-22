@@ -1,10 +1,11 @@
 require_relative "primes_controller"
 require_relative "primes_ai"
+require_relative "view"
 
 class Router
-  def initialize(players, range)
+  def initialize(players)
     @all_players = players
-    @primes_game = PrimesGameController.new(@all_players, range)
+    @primes_game = PrimesGameController.new(@all_players)
     @primes_ai = PrimesGameAI.new(@primes_game)
     @running = true
     @inputing = false
@@ -33,21 +34,12 @@ class Router
 
     while @current_run == true
       system "clear"
-      # ------------Test score-------------
-      # osum = 100
-      # olen = 4
-      # rnd = 16
-      # t = 40
-      # p (((osum ** Math.cbrt(olen) ** 0.9) / (rnd * 4 + t / 4)) ** 1.5).to_i
-      # exit
-      # -----------------------------------
-
-      # p "Lucky Number: #{@primes_game.get_lucky_number}"
 
       # Get current round and player
       puts "---------------Round #{@primes_game.get_current_round}---------------"
       puts ""
       puts "---------------#{@primes_game.get_current_player.get_name}---------------"
+      puts "---------------ID #{@primes_game.get_current_player.get_id}---------------"
       puts ""
       puts "Uniqueness #{@primes_game.get_current_player.get_uniqueness}, rate: #{@primes_game.get_current_player.get_uniqueness_rate(@primes_game.get_current_round)}%"
       @primes_game.reset_current_possibles
