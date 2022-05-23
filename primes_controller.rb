@@ -6,8 +6,7 @@ require "set"
 class PrimesGameController
   def initialize(all_players)
     @all_players = all_players
-    @player = @all_players[0]
-    @current_player = @player
+    @current_player = @all_players[0]
     @round = 1
     @current_action = ""
     @lucky_number = rand(2..99)

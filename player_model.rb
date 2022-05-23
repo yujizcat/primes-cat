@@ -9,24 +9,20 @@ class Player
     @level = 0
     @points = 0
     @powers = 0
-    @average_round = 0
     @current_history = []
     @is_ai = is_ai
-    # p determine_level
-    @min_range = determine_level[0]
-    @max_range = determine_level[1]
+    @range = [determine_level[0], determine_level[1]]
     @init_num_cards = determine_level[2]
-    @default_primes = Prime.each(@max_range).to_a.select { |x| x >= @min_range }.map { |x| x }
+    @default_primes = Prime.each(@range[1]).to_a.select { |x| x >= @range[0] }.map { |x| x }
   end
 
   def reset_player
     @cards = []
     @original_cards = []
     @current_history = []
-    @min_range = determine_level[0]
-    @max_range = determine_level[1]
+    @range = [determine_level[0], determine_level[1]]
     @init_num_cards = determine_level[2]
-    @default_primes = Prime.each(@max_range).to_a.select { |x| x >= @min_range }.map { |x| x }
+    @default_primes = Prime.each(@range[1]).to_a.select { |x| x >= @range[0] }.map { |x| x }
   end
 
   def get_id
@@ -46,53 +42,53 @@ class Player
     when 0
       "小白"
     when 1
-      "初级青铜"
+      "青铜☆"
     when 2
-      "中级青铜"
+      "青铜☆☆"
     when 3
-      "高级青铜"
+      "青铜☆☆☆"
     when 4
-      "特级青铜"
+      "青铜★"
     when 5
-      "初级白银"
+      "白银☆"
     when 6
-      "中级白银"
+      "白银☆☆"
     when 7
-      "高级白银"
+      "白银☆☆☆"
     when 8
-      "特级白银"
+      "白银★"
     when 9
-      "初级黄金"
+      "黄金☆"
     when 10
-      "中级黄金"
+      "黄金☆☆"
     when 11
-      "高级黄金"
+      "黄金☆☆☆"
     when 12
-      "特级黄金"
+      "黄金★"
     when 13
-      "初级铂金"
+      "铂金☆"
     when 14
-      "中级铂金"
+      "铂金☆☆"
     when 15
-      "高级铂金"
+      "铂金☆☆☆"
     when 16
-      "特级铂金"
+      "铂金★"
     when 17
-      "初级钻石"
+      "钻石☆"
     when 18
-      "中级钻石"
+      "钻石☆☆"
     when 19
-      "高级钻石"
+      "钻石☆☆☆"
     when 20
-      "特级钻石"
+      "钻石★"
     when 21
-      "初级星耀"
+      "星耀☆"
     when 22
-      "中级星耀"
+      "星耀☆☆"
     when 23
-      "高级星耀"
+      "星耀☆☆☆"
     when 24
-      "特级星耀"
+      "星耀★"
     when 25
       "黄金王者"
     when 26
