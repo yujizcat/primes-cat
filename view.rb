@@ -64,4 +64,17 @@ class PrimesView
   def display_other_cards
     @game.get_next_player_cards
   end
+
+  def display_actions(action)
+    return "" if action == ""
+    if action[0].instance_of?(Integer)
+      p "Add self to a new card, #{action[0]} + #{action[1]} = #{action[0] + action[1]}"
+    elsif action[0] == "a"
+      p "Add self average #{@game.get_current_player.get_cards_average} to your card #{action[1]}}"
+    elsif action[0] == "s"
+      p "Take other person's card #{action[1]} to your greatest card."
+    else
+      return ""
+    end
+  end
 end

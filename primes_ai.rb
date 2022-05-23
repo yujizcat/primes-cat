@@ -136,7 +136,10 @@ class PrimesGameAI < PrimesGameController
       input[1] = input[1].to_i
     end
     p "The action is #{input}"
-    @game.prompt_add(true, input)
+    valid_prompt = @game.prompt_check(true, input)
+    if valid_prompt != false
+      @game.prompt_confirmed(valid_prompt[1], valid_prompt[0])
+    end
   end
 
   def minimize_size

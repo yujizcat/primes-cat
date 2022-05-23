@@ -26,9 +26,11 @@ class Router
     #----TEST BEFORE SETTING----
     puts "Welcome #{@all_players[0].get_name}. Please Enter your level: "
     my_level = gets.chomp
+    #puts "Enter the rival's level"
+    #rival_level = gets.chomp
     @all_players[0].change_level(my_level.to_i)
     @all_players[0].reset_player
-    #@all_players[1].change_level(8)
+    #@all_players[1].change_level(rival_level.to_i)
     #@all_players[1].reset_player
     #---------------------------
 
@@ -49,24 +51,13 @@ class Router
       # puts "Uniqueness #{@primes_game.get_current_player.get_uniqueness}, rate: #{@primes_game.get_current_player.get_uniqueness_rate(@primes_game.get_current_round)}%"
       @primes_game.reset_current_possibles
       @primes_game.auto_reduce_fraction(@primes_game.get_current_player.get_cards)
-
+      @primes_game.auto_reduce_fraction(@primes_game.get_current_player.get_cards)
       @primes_game.calculate_current_possibles
       # @primes_game.display_current_possibles
       puts ""
 
-      # Beginning Display
-      @primes_view.display_top
-      if @all_players.size > 1
-        # Get another player's card
-
-        @primes_view.display_cards("rival")
-      end
-
-      @primes_view.display_space
-
-      @primes_view.display_cards("me")
-
-      @primes_view.display_bottom
+      # Main display process before action
+      display_process
 
       unless @primes_game.get_current_player.is_ai?
         # Start normal process
@@ -80,6 +71,11 @@ class Router
         @primes_game.get_current_player.get_cards
       end
 
+      # Main display process after action
+      display_process
+
+      pause
+
       # Append history for every round
       @primes_game.get_current_player.append_to_history
 
@@ -92,17 +88,39 @@ class Router
         #game_over(start_time, "Lose") if @primes_game.get_current_player.get_powers < 1
       end
 
-      # pause
-
       # Finishing this round
       @primes_game.finished_current_round
     end
   end
 
+  def display_process
+    system "clear"
+
+    # Beginning Display
+    @primes_view.display_top
+    if @all_players.size > 1
+      # Get another player's card
+      @primes_view.display_cards("rival")
+    end
+
+    @primes_view.display_space
+
+    # Display action only after action available
+    @primes_view.display_actions(@primes_game.get_current_action)
+
+    @primes_view.display_cards("me")
+    @primes_view.display_bottom
+  end
+
   def main_process_add_reduce_display_append
-    @primes_game.prompt_add(false, "")
-    @primes_game.auto_reduce_fraction(@primes_game.get_current_player.get_cards)
-    @primes_game.get_current_player.get_cards
+    valid_prompt = @primes_game.prompt_check(false, "")
+    # p "valid_prompt #{valid_prompt}"
+    # pause
+    if valid_prompt != false
+      @primes_game.prompt_confirmed(valid_prompt[1], valid_prompt[0])
+      @primes_game.auto_reduce_fraction(@primes_game.get_current_player.get_cards)
+      @primes_game.get_current_player.get_cards
+    end
   end
 
   def game_points_calculate(total_time)

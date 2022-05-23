@@ -9,6 +9,7 @@ class PrimesGameController
     @player = @all_players[0]
     @current_player = @player
     @round = 1
+    @current_action = ""
     @lucky_number = rand(2..99)
     @current_possibles = []
     @game_over = false
@@ -60,6 +61,10 @@ class PrimesGameController
     @round
   end
 
+  def get_current_action
+    return @current_action
+  end
+
   def get_model
     if @all_players.size >= 2
       return "Competitive Model"
@@ -80,7 +85,7 @@ class PrimesGameController
     end
   end
 
-  def prompt_add(already_input, input)
+  def prompt_check(already_input, input)
     running = true
     while running
       # prompt unless @current_player.is_ai?
@@ -95,20 +100,26 @@ class PrimesGameController
       unless input == false
         action = input[0]
         value = input[1]
+
+        # Set current actions
+        @current_action = input
+
         if input[0].instance_of?(String)
           if action == "a"
             # add average into one of my card
-            add_avg = add_average_card(value)
+            add_avg = check_add_average_card(value)
             if add_avg == true
               running = false
-              return 1
+              return [input, 1]
             end
           else
             # take next card
             take_card = check_next_card(value)
+            # p take_card
+            # gets.chomp
             if take_card == true
               running = false
-              return 1
+              return [input, 2]
             end
           end
         else
@@ -116,9 +127,9 @@ class PrimesGameController
           # add card my self in a new card
           self_add = check_self_card(input)
           if self_add == true
-            add_self_card(input[0], input[1])
+            # add_self_card(input[0], input[1])
             running = false
-            return 1
+            return [input, 0]
           else
             puts "Invalid add, please re-try"
           end
@@ -126,6 +137,23 @@ class PrimesGameController
       else
         puts "Error"
       end
+    end
+  end
+
+  def prompt_confirmed(action, input)
+    # p input
+    # p action
+    # gets.chomp
+    case action
+    when 0
+      p "add seelf"
+      add_self_card(input[0], input[1])
+    when 1
+      p "add avee"
+      add_average_card(input[1])
+    when 2
+      p "takke next"
+      take_next_card(input[1])
     end
   end
 
@@ -138,7 +166,7 @@ class PrimesGameController
     if index[0] != "a"
       # Add number directly
       player_card = @current_player.get_cards
-      p index.map { |x| player_card.include?(x) }.all? { |t| t == true }
+      # p index.map { |x| player_card.include?(x) }.all? { |t| t == true }
       return index.map { |x| player_card.include?(x) }.all? { |t| t == true }
     end
   end
@@ -155,7 +183,7 @@ class PrimesGameController
     return player_card
   end
 
-  def add_average_card(current_card)
+  def check_add_average_card(current_card)
     player_card = @current_player.get_cards
     current_avg = @current_player.get_cards_average
     # p player_card
@@ -164,11 +192,9 @@ class PrimesGameController
     p player_card
     p current_card
     if player_card.include?(current_card)
-      # new_value = player_card[player_card.index(current_card)] + current_avg
-      player_card[player_card.index(current_card)] += current_avg
-      # p player_card
-      @current_player.change_cards(player_card)
-      @current_player.reduce_powers
+      #player_card[player_card.index(current_card)] += current_avg
+      #@current_player.change_cards(player_card)
+      #@current_player.reduce_powers
       return true
     else
       p "Error, you don't have #{current_card} in your cards!"
@@ -176,8 +202,16 @@ class PrimesGameController
     end
   end
 
-  def check_next_card(current_card)
+  def add_average_card(current_card)
     player_card = @current_player.get_cards
+    current_avg = @current_player.get_cards_average
+    player_card[player_card.index(current_card)] += current_avg
+    @current_player.change_cards(player_card)
+    @current_player.reduce_powers
+  end
+
+  def check_next_card(current_card)
+    # player_card = @current_player.get_cards
     if @all_players.size > 1
       next_player_card = get_next_player.get_cards
     else
@@ -187,9 +221,9 @@ class PrimesGameController
     if next_player_card.include?(current_card)
       # Only allow if other person'card size > 2
       if next_player_card.size > 2
-        @current_player.get_cards[-1] += current_card
-        next_player_card.delete(current_card)
-        @current_player.reduce_powers
+        #@current_player.get_cards[-1] += current_card
+        #next_player_card.delete(current_card)
+        #@current_player.reduce_powers
         return true
       else
         p "Error, the other person must have more than 2 cards!"
@@ -199,6 +233,14 @@ class PrimesGameController
       p "Error, the rival does not have #{current_card}"
       return false
     end
+  end
+
+  def take_next_card(current_card)
+    # player_card = @current_player.get_cards
+    next_player_card = get_next_player.get_cards
+    @current_player.get_cards[-1] += current_card
+    next_player_card.delete(current_card)
+    @current_player.reduce_powers
   end
 
   def auto_reduce_fraction(player_card)
@@ -341,6 +383,9 @@ class PrimesGameController
     # Get the current round of player index
     current_round = @all_players.index(@current_player)
 
+    # Reset current action
+    @current_action = ""
+
     if @current_player == @all_players[-1]
       # If the player is last, go to the new round and set current 0
       @current_player = @all_players[0]
@@ -350,6 +395,7 @@ class PrimesGameController
       @current_player = @all_players[current_round + 1]
     end
 
+    # Clean powers if power less than 0
     @current_player.clean_powers if @current_player.get_powers <= 0
 
     set_player_as_current(@current_player)
