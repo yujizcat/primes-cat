@@ -48,6 +48,10 @@ class Router
     while @current_run == true
       system "clear"
 
+      p "ppppp"
+      p @primes_ai.num_priority(87)
+      gets.chomp
+
       # puts "Uniqueness #{@primes_game.get_current_player.get_uniqueness}, rate: #{@primes_game.get_current_player.get_uniqueness_rate(@primes_game.get_current_round)}%"
       @primes_game.reset_current_possibles
       @primes_game.auto_reduce_fraction(@primes_game.get_current_player.get_cards)

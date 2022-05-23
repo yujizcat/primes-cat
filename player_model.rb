@@ -191,8 +191,11 @@ class Player
   end
 
   def set_init_powers
-    @powers = (get_cards[-1] / 10) + get_cards.size
-    return @powers
+    if @level <= 24
+      @powers = ((@level + 3) / 4) * 5
+    else
+      @powers = (@level - 20) * 10
+    end
   end
 
   def get_powers

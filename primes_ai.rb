@@ -173,6 +173,15 @@ class PrimesGameAI < PrimesGameController
     end
   end
 
+  def num_priority(num)
+    temp = []
+    [*0..num].each do |x|
+      temp << x.gcd(num)
+    end
+    # puts "#{m} ------#{temp.uniq.size}"
+    return temp.uniq.size
+  end
+
   def check_last_conditions
     is_last = false
     if @game.get_current_player.get_cards == [2, 3]
